@@ -1,12 +1,23 @@
-function renderBook(filter) {
+let books;
+
+async function renderBook(filter) {
   const booksWrapper = document.querySelector(".books");
 
-  const books = getBooks();
-
+  booksWrapper.classList += " books__loading";
+  if (!books) {
+    books = await getBooks(); //get the promise
+  }
+  booksWrapper.classList.remove("books__loading");
   if (filter === "LOW-TO-HIGH") {
-    books.sort((a, b) => a.originalPrice - b.originalPrice);
+    books.sort(
+      (a, b) =>
+        (a.salePrice || a.originalPrice) - (b.salePrice || b.originalPrice)
+    );
   } else if (filter === "HIGH-TO-LOW") {
-    books.sort((a, b) => b.originalPrice - a.originalPrice);
+    books.sort(
+      (a, b) =>
+        (b.salePrice || b.originalPrice) - (a.salePrice || a.originalPrice)
+    );
   } else if (filter == "RATING") {
     books.sort((a, b) => b.rating - a.rating);
   }
@@ -26,12 +37,21 @@ function renderBook(filter) {
       ${ratingsHTML(book.rating)}
     </div>
     <div class="book__price">
-      <span class="book__price--normal">$59.95</span> $14.95
+      ${priceHTML(book.originalPrice, book.salePrice)}
     </div>
   </div>`;
     })
     .join("");
   booksWrapper.innerHTML = bookHtml;
+}
+
+function priceHTML(originalPrice, salePrice) {
+  if (!salePrice) {
+    return `$${originalPrice.toFixed(2)}`;
+  }
+  return `<span class="book__price--normal">$${originalPrice.toFixed(
+    2
+  )}</span> $${salePrice.toFixed(2)}`;
 }
 
 function ratingsHTML(rating) {
@@ -49,7 +69,6 @@ function ratingsHTML(rating) {
 
 function filterBooks(event) {
   renderBook(event.target.value);
-  // console.log(event.target.value);
 }
 
 setTimeout(() => {
@@ -58,94 +77,98 @@ setTimeout(() => {
 
 // FAKE DATA
 function getBooks() {
-  return [
-    {
-      id: 1,
-      title: "Crack the Coding Interview",
-      url: "assets/crack the coding interview.png",
-      originalPrice: 49.95,
-      salePrice: 14.95,
-      rating: 4.5,
-    },
-    {
-      id: 2,
-      title: "Atomic Habits",
-      url: "assets/atomic habits.jpg",
-      originalPrice: 39,
-      salePrice: 21,
-      rating: 5,
-    },
-    {
-      id: 3,
-      title: "Deep Work",
-      url: "assets/deep work.jpeg",
-      originalPrice: 29,
-      salePrice: null,
-      rating: 3.5,
-    },
-    {
-      id: 4,
-      title: "The 10X Rule",
-      url: "assets/book-1.jpeg",
-      originalPrice: 44,
-      salePrice: null,
-      rating: 4.5,
-    },
-    {
-      id: 5,
-      title: "Be Obsessed Or Be Average",
-      url: "assets/book-2.jpeg",
-      originalPrice: 32,
-      salePrice: 17,
-      rating: 4,
-    },
-    {
-      id: 6,
-      title: "Rich Dad Poor Dad",
-      url: "assets/book-3.jpeg",
-      originalPrice: 70,
-      salePrice: null,
-      rating: 4,
-    },
-    {
-      id: 7,
-      title: "Cashflow Quadrant",
-      url: "assets/book-4.jpeg",
-      originalPrice: 11,
-      salePrice: 10,
-      rating: 4,
-    },
-    {
-      id: 8,
-      title: "48 Laws of Power",
-      url: "assets/book-5.jpeg",
-      originalPrice: 38,
-      salePrice: 17.95,
-      rating: 4.5,
-    },
-    {
-      id: 9,
-      title: "The 5 Second Rule",
-      url: "assets/book-6.jpeg",
-      originalPrice: 35,
-      salePrice: 23.99,
-      rating: 4,
-    },
-    {
-      id: 10,
-      title: "Your Next Five Moves",
-      url: "assets/book-7.jpg",
-      originalPrice: 40,
-      salePrice: 30.99,
-      rating: 4,
-    },
-    {
-      id: 11,
-      title: "Mastery",
-      url: "assets/book-8.jpeg",
-      originalPrice: 30,
-      salePrice: 19.99,
-      rating: 4.5,
-    },
-  ];
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve([
+        {
+          id: 1,
+          title: "Crack the Coding Interview",
+          url: "assets/crack the coding interview.png",
+          originalPrice: 49.95,
+          salePrice: 14.95,
+          rating: 4.5,
+        },
+        {
+          id: 2,
+          title: "Atomic Habits",
+          url: "assets/atomic habits.jpg",
+          originalPrice: 39,
+          salePrice: 21,
+          rating: 5,
+        },
+        {
+          id: 3,
+          title: "Deep Work",
+          url: "assets/deep work.jpeg",
+          originalPrice: 29,
+          salePrice: null,
+          rating: 3.5,
+        },
+        {
+          id: 4,
+          title: "The 10X Rule",
+          url: "assets/book-1.jpeg",
+          originalPrice: 44,
+          salePrice: null,
+          rating: 4.5,
+        },
+        {
+          id: 5,
+          title: "Be Obsessed Or Be Average",
+          url: "assets/book-2.jpeg",
+          originalPrice: 32,
+          salePrice: 17,
+          rating: 4,
+        },
+        {
+          id: 6,
+          title: "Rich Dad Poor Dad",
+          url: "assets/book-3.jpeg",
+          originalPrice: 70,
+          salePrice: null,
+          rating: 4,
+        },
+        {
+          id: 7,
+          title: "Cashflow Quadrant",
+          url: "assets/book-4.jpeg",
+          originalPrice: 11,
+          salePrice: 10,
+          rating: 4,
+        },
+        {
+          id: 8,
+          title: "48 Laws of Power",
+          url: "assets/book-5.jpeg",
+          originalPrice: 38,
+          salePrice: 17.95,
+          rating: 4.5,
+        },
+        {
+          id: 9,
+          title: "The 5 Second Rule",
+          url: "assets/book-6.jpeg",
+          originalPrice: 35,
+          salePrice: 23.99,
+          rating: 4,
+        },
+        {
+          id: 10,
+          title: "Your Next Five Moves",
+          url: "assets/book-7.jpg",
+          originalPrice: 40,
+          salePrice: 30.99,
+          rating: 4,
+        },
+        {
+          id: 11,
+          title: "Mastery",
+          url: "assets/book-8.jpeg",
+          originalPrice: 30,
+          salePrice: 19.99,
+          rating: 4.5,
+        },
+      ]);
+    }, 1000);
+  });
 }
